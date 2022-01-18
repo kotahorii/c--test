@@ -2,19 +2,27 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(EnemyStatus))]
 public class EnemyMove : MonoBehaviour
 {
   [SerializeField] private LayerMask raycastLayerMask;
   private NavMeshAgent _agent;
+  private EnemyStatus _status;
   private RaycastHit[] _raycastHits = new RaycastHit[10];
   // Start is called before the first frame update
   void Start()
   {
     _agent = GetComponent<NavMeshAgent>();
+    _status = GetComponent<EnemyStatus>();
   }
 
   public void OnDetectObject(Collider collider)
   {
+    if (!_status.IsMovable)
+    {
+      _agent.isStopped = true;
+      return;
+    }
     if (collider.CompareTag("Player"))
     {
       var positionDiff = collider.transform.position - transform.position;
